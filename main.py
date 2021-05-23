@@ -20,9 +20,6 @@ def create_database():
 
         c.execute('CREATE TABLE Przyslowia (id INTEGER PRIMARY KEY AUTOINCREMENT, tresc varchar(4095))')
 
-        c.execute('INSERT INTO Przyslowia (tresc) VALUES (Gdyby)')
-        c.execute('INSERT INTO Przyslowia (tresc) VALUES (jajca)')
-
         db_connection.commit()
 
     except Error as e:
