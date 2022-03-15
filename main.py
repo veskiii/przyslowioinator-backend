@@ -29,16 +29,38 @@ def create_database():
 
 
 @app.route('/przyslowia', methods=['GET'])
-def losuj_przyslowie():
+def getPrzyslowia():
     db_connection = sqlite3.connect(db_name)
     c = db_connection.cursor()
 
     ret = c.execute('SELECT id, tresc FROM Przyslowia')
-    przyslowia_dict = {'przyslowia': []}
+    przyslowia = []
     for row in ret:
-        przyslowia_dict['przyslowia'].append({'id': row[0], 'tresc': row[1]})
-    return jsonify(przyslowia_dict)
+        przyslowia.append({'id': row[0], 'content': row[1]})
+    return jsonify(przyslowia)
 
+@app.route('/przyslowie/<id>', methods=['GET'])
+def getPrzyslowie(id):
+    db_connection = sqlite3.connect(db_name)
+    c = db_connection.cursor()
+
+    ret = c.execute('SELECT id, tresc FROM Przyslowia WHERE id LIKE \"' + id + '\"')
+    for row in ret:
+        wiktionary_uri = "https://pl.wiktionary.org/wiki/" + row[1].replace(' ', '_') + "#pl"
+        return jsonify( {'id': row[0], 'content': row[1], 'wiktionary': wiktionary_uri} )
+
+    return "", 404
+
+@app.route('/randomPrzyslowie', methods=['GET'])
+def getRandomPrzyslowie():
+    db_connection = sqlite3.connect(db_name)
+    c = db_connection.cursor()
+
+    ret = c.execute('SELECT id, tresc FROM Przyslowia ORDER BY RANDOM() LIMIT 1')
+    row = ret.fetchall()[0]
+    print(row)
+    przyslowia_dict = {'id': row[0], 'content': row[1]}
+    return jsonify(przyslowia_dict)
 
 @app.route('/addPrzyslowie', methods=['POST'])
 def add_przyslowie():
